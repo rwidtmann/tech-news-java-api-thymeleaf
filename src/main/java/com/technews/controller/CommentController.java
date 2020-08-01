@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
@@ -32,19 +33,20 @@ public class CommentController {
 
     @PostMapping("/comments")
     @ResponseStatus(HttpStatus.CREATED)
-    public String createComment(@RequestBody Comment comment, HttpServletRequest request) throws NoEmailException, Exception {
+    public void createComment(@ModelAttribute Comment comment, HttpServletRequest request, HttpServletResponse response) throws NoEmailException, Exception {
         String returnValue = "";
 
         if(request.getSession(false) != null) {
             User sessionUser = (User) request.getSession().getAttribute("SESSION_USER");
-            System.out.println("Session User from loggedIn value is: ");
             comment.setUserId(sessionUser.getId());
             repository.save(comment);
+            response.sendRedirect("/post/" + comment.getPostId());
         } else {
-            returnValue = "login-main";
+            response.sendRedirect("/login");
+            //returnValue = "login";
         }
 
-        return returnValue;
+        //return returnValue;
     }
 
 

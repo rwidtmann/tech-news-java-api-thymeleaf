@@ -4,6 +4,7 @@ import com.technews.exception.NoEmailException;
 import com.technews.model.Comment;
 import com.technews.model.Post;
 import com.technews.model.User;
+import com.technews.model.Vote;
 import com.technews.repository.CommentRepository;
 import com.technews.repository.PostRepository;
 import com.technews.repository.UserRepository;
@@ -21,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 
 @Controller
-//@RequestMapping("/api")
 public class HomepageController {
 
     @Autowired
@@ -35,6 +35,7 @@ public class HomepageController {
 
     @Autowired
     CommentRepository commentRepository;
+
 
 
     @GetMapping("/login")
@@ -94,13 +95,46 @@ public class HomepageController {
             model.addAttribute("sessionUser", sessionUser);
             model.addAttribute("loggedIn", sessionUser.isLoggedIn());
             model.addAttribute("commentList", commentList);
+            model.addAttribute("comment", new Comment());
 
-            return "single-post-main";      // rjw testing
+            return "single-post";
         } else {
-            return "login-main";     // rjw
+            return "redirect:/login";
         }
 
     }
+
+
+    @PutMapping("/posts/upvote")
+    public String addVote(@ModelAttribute Vote vote, HttpServletRequest request) {
+        //String returnValue = "";
+
+        if(request.getSession(false) != null) {
+            Post returnPost = null;
+
+            User sessionUser = (User) request.getSession().getAttribute("SESSION_USER");
+            vote.setUserId(sessionUser.getId());
+            voteRepository.save(vote);
+
+            returnPost = postRepository.getOne(vote.getPostId());
+            returnPost.setVoteCount(voteRepository.countPostByPostId(vote.getPostId()));
+
+            return "redirect:/single-post";
+        } else {
+            return "redirect:/login";
+        }
+
+    }
+
+
+    @PostMapping("/users")
+    public String addUser(@ModelAttribute User user) throws IOException {
+        userRepository.save(user);
+
+        return "redirect:/login";
+    }
+
+
 
 
     // rjw - this needs to be removed. Commenting for now to see what will break

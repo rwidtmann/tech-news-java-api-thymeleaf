@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -75,9 +76,9 @@ public class UserController {
 
 
     @PostMapping("/users")
-    public void addUser(@ModelAttribute User user, HttpServletResponse response) throws IOException {
+    public User addUser(@RequestBody User user, HttpServletResponse response) throws IOException {
         repository.save(user);
-        response.sendRedirect("/login");
+        return user;
     }
 
 

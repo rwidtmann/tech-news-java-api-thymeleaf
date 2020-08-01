@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Single-post</title>
+</head>
+
+<body>
+
+<div layout:fragment="content">
+
+    <article class="post">
+        <div class="title">
+            <a th:href="@{ ${post.postUrl} }" target="_blank">[[${post.title}]]</a>
+            <span>[[${post.postUrl}]]</span>
+        </div>
+        <div class="meta">
+            [[${post.voteCount}]] point(s) by [[${post.userName}]] on
+            [[${post.postedAt}]]
+            |
+            <a th:href="@{/post/{id}(id=${post.id})}">[[${post.comments.size()}]] comment(s)</a>
+        </div>
+    </article>
+
+</div>
+
+</body>
+</html>

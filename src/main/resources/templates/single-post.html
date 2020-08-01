@@ -24,36 +24,32 @@
     </article>
 
 
-    <form action="#" th:action="@{/comments}" th:object="${comment}" method="post" class="comment-form">
+    <form th:if="${loggedIn}" action="#" th:action="@{/comments}" th:object="${comment}" method="post"
+          class="comment-form">
         <div>
-            <input type="hidden" th:value="${post.id}" name="postId" />
+            <input type="hidden" th:value="${post.id}" name="postId"/>
             <textarea name="comment-body" th:field="*{commentText}"></textarea>
         </div>
 
         <div>
-            <button type="submit" >add comment</button>
-            <button type="button" class="upvote-btn">upvote-orig</button>
-
+            <button type="submit">add comment</button>
+            <button type="button" class="upvote-btn">upvote</button>
         </div>
-        <span>
-            <form action="#" th:action="@{/posts/upvote}" th:object="${vote}" method="put" class="comment-form">
-                <input type="hidden" th:value="${post.id}" name="postId" />
-                <button type="submit" class="upvote-btn">upvote</button></a>
-            </form>
-        </span>
     </form>
 
     <div class="comments">
-        <section th:each="comment : ${commentList}" class="comment" >
+        <section th:each="comment : ${commentList}" class="comment">
             <div class="meta">
-                [[${sessionUser.username}]] on [[${post.postedAt}]]
+                [[${post.userName}]] on [[${post.postedAt}]]
             </div>
             <div class="text">
                 [[${comment.commentText}]]
             </div>
         </section>
     </div>
-
+    <div th:if="${loggedIn}">
+        <script src="/js/upvote.js"></script>
+    </div>
 </div>
 
 </body>

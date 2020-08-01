@@ -37,7 +37,6 @@ public class HomepageController {
     CommentRepository commentRepository;
 
 
-
     @GetMapping("/login")
     public String login(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -82,6 +81,9 @@ public class HomepageController {
 
         if (request.getSession(false) != null) {
             User sessionUser = (User) request.getSession().getAttribute("SESSION_USER");
+            model.addAttribute("sessionUser", sessionUser);
+            model.addAttribute("loggedIn", sessionUser.isLoggedIn());
+        }
 
             Post post = postRepository.getOne(id);
             post.setVoteCount(voteRepository.countPostByPostId(post.getId()));
@@ -92,38 +94,11 @@ public class HomepageController {
             List<Comment> commentList = commentRepository.findAllCommentsByPostId(post.getId());
 
             model.addAttribute("post", post);
-            model.addAttribute("sessionUser", sessionUser);
-            model.addAttribute("loggedIn", sessionUser.isLoggedIn());
+
             model.addAttribute("commentList", commentList);
             model.addAttribute("comment", new Comment());
 
-            return "single-post";
-        } else {
-            return "redirect:/login";
-        }
-
-    }
-
-
-    @PutMapping("/posts/upvote")
-    public String addVote(@ModelAttribute Vote vote, HttpServletRequest request) {
-        //String returnValue = "";
-
-        if(request.getSession(false) != null) {
-            Post returnPost = null;
-
-            User sessionUser = (User) request.getSession().getAttribute("SESSION_USER");
-            vote.setUserId(sessionUser.getId());
-            voteRepository.save(vote);
-
-            returnPost = postRepository.getOne(vote.getPostId());
-            returnPost.setVoteCount(voteRepository.countPostByPostId(vote.getPostId()));
-
-            return "redirect:/single-post";
-        } else {
-            return "redirect:/login";
-        }
-
+        return "single-post";
     }
 
 
@@ -133,8 +108,6 @@ public class HomepageController {
 
         return "redirect:/login";
     }
-
-
 
 
     // rjw - this needs to be removed. Commenting for now to see what will break

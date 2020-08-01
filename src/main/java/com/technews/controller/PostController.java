@@ -92,27 +92,27 @@ public class PostController {
     }
 
 
-//    @PutMapping("/posts/upvote")
-//    public String addVote(@RequestBody Vote vote, HttpServletRequest request) {
-//        String returnValue = "";
-//
-//        if(request.getSession(false) != null) {
-//            Post returnPost = null;
-//
-//            User sessionUser = (User) request.getSession().getAttribute("SESSION_USER");
-//            vote.setUserId(sessionUser.getId());
-//            voteRepository.save(vote);
-//
-//            returnPost = repository.getOne(vote.getPostId());
-//            returnPost.setVoteCount(voteRepository.countPostByPostId(vote.getPostId()));
-//
-//            returnValue = "";
-//        } else {
-//            returnValue = "login";
-//        }
-//
-//        return returnValue;
-//    }
+    @PutMapping("/posts/upvote")
+    public String addVote(@RequestBody Vote vote, HttpServletRequest request) {
+        String returnValue = "";
+
+        if(request.getSession(false) != null) {
+            Post returnPost = null;
+
+            User sessionUser = (User) request.getSession().getAttribute("SESSION_USER");
+            vote.setUserId(sessionUser.getId());
+            voteRepository.save(vote);
+
+            returnPost = repository.getOne(vote.getPostId());
+            returnPost.setVoteCount(voteRepository.countPostByPostId(vote.getPostId()));
+
+            returnValue = "";
+        } else {
+            returnValue = "login";
+        }
+
+        return returnValue;
+    }
 
 
     @DeleteMapping("/posts/{id}")

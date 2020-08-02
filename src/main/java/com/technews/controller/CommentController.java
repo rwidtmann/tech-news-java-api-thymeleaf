@@ -21,13 +21,8 @@ public class CommentController {
     CommentRepository repository;
 
     @GetMapping("/comments")
-    public List<Comment> getAllComments(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if(request.getSession(false) != null) {
+    public List<Comment> getAllComments()  {
             return repository.findAll();
-        } else {
-            response.sendRedirect("/login");
-            return null;
-        }
     }
 
 
@@ -46,7 +41,7 @@ public class CommentController {
             User sessionUser = (User) request.getSession().getAttribute("SESSION_USER");
             comment.setUserId(sessionUser.getId());
             repository.save(comment);
-            response.sendRedirect("/post/" + comment.getPostId());
+            response.sendRedirect("/posts/" + comment.getPostId());
         } else {
             response.sendRedirect("/login");
             //returnValue = "login";

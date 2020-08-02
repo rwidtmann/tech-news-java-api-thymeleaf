@@ -55,7 +55,6 @@ public class DashboardController {
 
             return "dashboard";
         } else {
-            //model.addAttribute("loggedIn", false);
             model.addAttribute("user", new User());
             return "login";
         }
@@ -66,6 +65,8 @@ public class DashboardController {
     public String editPost(@PathVariable int id, Model model, HttpServletRequest request) {
 
         if(request.getSession(false) != null) {
+            User sessionUser = (User) request.getSession().getAttribute("SESSION_USER");
+
             Post returnPost = postRepository.getOne(id);
             User tempUser = userRepository.getOne(returnPost.getUserId());
             returnPost.setUserName(tempUser.getUsername());
@@ -74,11 +75,14 @@ public class DashboardController {
             List<Comment> commentList = commentRepository.findAllCommentsByPostId(returnPost.getId());
 
             model.addAttribute("post", returnPost);
+            model.addAttribute("loggedIn", sessionUser.isLoggedIn());
             model.addAttribute("commentList", commentList);
+            model.addAttribute("comment", new Comment());
 
-            return "edit-post-main";
+            return "edit-post";
         } else {
-            return "login-main";
+            model.addAttribute("user", new User());
+            return "login";
         }
     }
 

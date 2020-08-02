@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -20,8 +21,13 @@ public class CommentController {
     CommentRepository repository;
 
     @GetMapping("/comments")
-    public List<Comment> getAllComments() {
-        return repository.findAll();
+    public List<Comment> getAllComments(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if(request.getSession(false) != null) {
+            return repository.findAll();
+        } else {
+            response.sendRedirect("/login");
+            return null;
+        }
     }
 
 

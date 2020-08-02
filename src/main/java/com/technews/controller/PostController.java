@@ -12,6 +12,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -57,20 +59,18 @@ public class PostController {
 
     @PostMapping("/posts")
     @ResponseStatus(HttpStatus.CREATED)
-    public String addPost(@ModelAttribute Post post, HttpServletRequest request) {
-        String returnValue = "";
+    public void addPost(@ModelAttribute Post post, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         if(request.getSession(false) != null) {
             User sessionUser = (User) request.getSession().getAttribute("SESSION_USER");
             post.setUserId(sessionUser.getId());
             repository.save(post);
-
-            returnValue = "";
+            response.sendRedirect("dashboard");
         } else {
-            returnValue = "login-main";
+            response.sendRedirect("login");
+
         }
 
-        return returnValue;
     }
 
 

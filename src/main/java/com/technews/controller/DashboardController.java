@@ -41,20 +41,23 @@ public class DashboardController {
 
             Integer userId = sessionUser.getId();
 
-            List<Post> postListForUser = postRepository.findAllPostsByUserId(userId);
-            for (Post p : postListForUser) {
+            List<Post> postList = postRepository.findAllPostsByUserId(userId);
+            for (Post p : postList) {
                 p.setVoteCount(voteRepository.countPostByPostId(p.getId()));
                 User user = userRepository.getOne(p.getUserId());
                 p.setUserName(user.getUsername());
             }
 
-            model.addAttribute("postListForUser", postListForUser);
+            model.addAttribute("user", sessionUser);
+            model.addAttribute("postList", postList);
             model.addAttribute("loggedIn", sessionUser.isLoggedIn());
+            model.addAttribute("post", new Post());
 
-            return "dashboard-main";
+            return "dashboard";
         } else {
-            model.addAttribute("loggedIn", false);
-            return "login-main";
+            //model.addAttribute("loggedIn", false);
+            model.addAttribute("user", new User());
+            return "login";
         }
     }
 

@@ -71,7 +71,7 @@ public class UserController {
         sessionUser.setLoggedIn(true);
         request.getSession().setAttribute("SESSION_USER", sessionUser);
 
-        response.sendRedirect("/");
+        response.sendRedirect("/dashboard");
     }
 
 

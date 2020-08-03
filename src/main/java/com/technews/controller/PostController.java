@@ -29,8 +29,8 @@ public class PostController {
     @Autowired
     UserRepository userRepository;
 
-    @GetMapping("/posts")
-    public List<Post> getAllPosts(Model model) {
+    @GetMapping("/api/posts")
+    public List<Post> getAllPosts() {
         List<Post> postList = repository.findAll();
         for (Post p : postList) {
             p.setVoteCount(voteRepository.countPostByPostId(p.getId()));
@@ -39,60 +39,32 @@ public class PostController {
     }
 
 
-    @GetMapping("/posts/{id}")
-    public String getPost(@PathVariable Integer id, HttpServletRequest request) {
-        String returnValue = "";
+    @GetMapping("/api/posts/{id}")
+    public Post getPost(@PathVariable Integer id) {
+        Post returnPost = repository.getOne(id);
+        returnPost.setVoteCount(voteRepository.countPostByPostId(returnPost.getId()));
 
-        if(request.getSession(false) != null) {
-            Post returnPost = repository.getOne(id);
-            User tempUser = userRepository.getOne(returnPost.getUserId());
-            returnPost.setUserName(tempUser.getUsername());
-            returnPost.setVoteCount(voteRepository.countPostByPostId(returnPost.getId()));
-            returnValue = "";
-        } else {
-            returnValue = "login-main";
-        }
-
-        return returnValue;
+        return returnPost;
     }
 
 
-    @PostMapping("/posts")
+    @PostMapping("/api/posts")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addPost(@ModelAttribute Post post, HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-        if(request.getSession(false) != null) {
-            User sessionUser = (User) request.getSession().getAttribute("SESSION_USER");
-            post.setUserId(sessionUser.getId());
-            repository.save(post);
-            response.sendRedirect("dashboard");
-        } else {
-            response.sendRedirect("login");
-
-        }
-
+    public Post addPost(@RequestBody Post post) throws IOException {
+        repository.save(post);
+        return post;
     }
 
 
-    @PutMapping("/posts/{id}")
-    public String updatePost(@PathVariable int id, @RequestBody Post post, HttpServletRequest request) {
-        String returnValue = "";
-
-        if(request.getSession(false) != null) {
-            Post tempPost = repository.getOne(id);
-            tempPost.setTitle(post.getTitle());
-            repository.save(tempPost);
-
-            returnValue = "";
-        } else {
-            returnValue = "login-main";
-        }
-
-        return returnValue;
+    @PutMapping("/api/posts/{id}")
+    public Post updatePost(@PathVariable int id, @RequestBody Post post) {
+        Post tempPost = repository.getOne(id);
+        tempPost.setTitle(post.getTitle());
+        return repository.save(tempPost);
     }
 
 
-    @PutMapping("/posts/upvote")
+    @PutMapping("/api/posts/upvote")
     public String addVote(@RequestBody Vote vote, HttpServletRequest request) {
         String returnValue = "";
 
@@ -115,7 +87,7 @@ public class PostController {
     }
 
 
-    @DeleteMapping("/posts/{id}")
+    @DeleteMapping("/api/posts/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePost(@PathVariable int id) {
         repository.deleteById(id);

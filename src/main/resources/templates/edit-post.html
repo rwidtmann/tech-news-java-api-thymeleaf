@@ -15,22 +15,32 @@
         Edit Post
     </h2>
 
-    <form action="#" th:href="@{/posts/{id}(id=${post.id})}" th:object="${post}" method="post" class="edit-post-form">
+    <form action="#" th:action="@{/posts/{id}(id=${post.id})}" th:object="${post}" method="post" class="edit-post-form">
         <div>
-            <input name="post-title" type="text" th:field="*{title}" />
-            <span>[[${post.postUrl}]]</span>
+<!--            <input type="hidden" th:value="${post.id}" name="postId" />-->
+            <input type="text" th:field="*{title}"/>
+            <span th:text="${#strings.replace(post.postUrl,'http://','')}"></span>
         </div>
-        <div>
-            [[${post.voteCount}]]  point(s) by you on [[${post.postedAt}]]
+        <div th:if="${post.voteCount == 1}" class="meta">
+            [[${post.voteCount}]] point by [[${post.userName}]] on
+            <span th:text="${#dates.format(post.postedAt, 'MM-dd-YY')}"></span>
             |
-            <a th:href="@{/post/{id}(id=${post.id})}">[[${commentList.size()}]] comment(s)</a>
+            <a th:href="@{/post/{id}(id=${post.id})}" th:if="${post.comments.size() == 1}">[[${post.comments.size()}]] comment</a>
+            <a th:href="@{/post/{id}(id=${post.id})}" th:unless="${post.comments.size() == 1}">[[${post.comments.size()}]] comments</a>
         </div>
-        <button type="submit">Save post</button>
+        <div th:unless="${post.voteCount == 1}" class="meta">
+            [[${post.voteCount}]] points by [[${post.userName}]] on
+            <span th:text="${#dates.format(post.postedAt, 'MM-dd-YY')}"></span>
+            |
+            <a th:href="@{/post/{id}(id=${post.id})}" th:if="${post.comments.size() == 1}">[[${post.comments.size()}]] comment</a>
+            <a th:href="@{/post/{id}(id=${post.id})}" th:unless="${post.comments.size() == 1}">[[${post.comments.size()}]] comments</a>
+        </div>
+        <button type="submit">Edit post title</button>
         <button type="button" class="delete-post-btn">Delete post</button>
     </form>
 
 
-    <form action="#" th:action="@{/comments}" th:object="${comment}" method="post" class="comment-form">
+    <form action="#" th:action="@{/comments/edit}" th:object="${comment}" method="post" class="comment-form">
         <div>
             <input type="hidden" th:value="${post.id}" name="postId"/>
             <textarea name="comment-body" th:field="*{commentText}"></textarea>
@@ -41,6 +51,20 @@
         </div>
     </form>
 
+    <div class="comments">
+        <section th:each="comment : ${commentList}" class="comment">
+            <div class="meta">
+                [[${post.userName}]] on [[${post.postedAt}]]
+            </div>
+            <div class="text">
+                [[${comment.commentText}]]
+            </div>
+        </section>
+    </div>
+
+    <div th:if="${loggedIn}">
+        <script src="/js/delete-post.js"></script>
+    </div>
 
 </div>
 

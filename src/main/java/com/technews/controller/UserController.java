@@ -8,10 +8,7 @@ import com.technews.repository.UserRepository;
 import com.technews.repository.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,7 +16,6 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
 public class UserController {
 
     @Autowired
@@ -32,7 +28,7 @@ public class UserController {
     ObjectMapper mapper;
 
 
-    @GetMapping("/users/logout")
+    @GetMapping("/api/users/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
         if (request.getSession(false) != null) {
             request.getSession().invalidate();
@@ -41,7 +37,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/users")
+    @GetMapping("/api/users")
     public List<User> getAllUsers() {
         List<User> userList = repository.findAll();
         for (User u : userList) {
@@ -54,35 +50,14 @@ public class UserController {
     }
 
 
-    @PostMapping("/users/login")
-    public void login(@ModelAttribute User user, HttpServletRequest request, HttpServletResponse response) throws NoEmailException, Exception {
-
-        User sessionUser = repository.findUserByEmail(user.getEmail());
-
-        try {
-            if (sessionUser.equals(null)) {
-
-            }
-        } catch (NullPointerException e) {
-            response.sendRedirect("/login");
-            throw new NoEmailException("No user with that email address!");
-        }
-
-        sessionUser.setLoggedIn(true);
-        request.getSession().setAttribute("SESSION_USER", sessionUser);
-
-        response.sendRedirect("/dashboard");
-    }
-
-
-    @PostMapping("/users")
+    @PostMapping("/api/users")
     public User addUser(@RequestBody User user, HttpServletResponse response) throws IOException {
         repository.save(user);
         return user;
     }
 
 
-    @PutMapping("/users/{id}")
+    @PutMapping("/api/users/{id}")
     public User updateUser(@PathVariable int id, @RequestBody User user) {
         User tempUser = repository.getOne(id);
 
@@ -95,7 +70,7 @@ public class UserController {
     }
 
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/api/users/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable int id) {
         repository.deleteById(id);
